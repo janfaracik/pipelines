@@ -12,5 +12,10 @@ pipeline {
                 echo 'Hello World'
             }
         }
+        stage('PIE') {
+            steps {
+                echo 'Lots of pie'
+            }
+        }
     }
 }
