@@ -17,5 +17,10 @@ pipeline {
                 echo 'Lots of pie'
             }
         }
+        stage('more PIE') {
+            steps {
+                echo 'Little bit more pie'
+            }
+        }
     }
 }
