@@ -21,5 +21,15 @@ pipeline {
                 echo 'Hello World 23'
             }
         }
+        stage('PIE') {
+            steps {
+                echo 'Lots of pie'
+            }
+        }
+        stage('more PIE') {
+            steps {
+                echo 'Little bit more pie'
+            }
+        }
     }
 }
