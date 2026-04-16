@@ -1,143 +1,41 @@
 pipeline {
     agent any
 
+    options {
+        timestamps()
+    }
+
     stages {
-        stage('Stage 1') {
+        stage('Build') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 1'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 1 failed randomly')
-                        }
-                        echo 'Stage 1 completed'
-                    }
+                sh 'mvn -B -ntp clean compile'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    sh 'mvn -B -ntp test'
+                }
+            }
+            post {
+                always {
+                    junit testResults: 'target/surefire-reports/*.xml'
                 }
             }
         }
 
-        stage('Stage 2') {
+        stage('Warnings') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 2'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 2 failed randomly')
-                        }
-                        echo 'Stage 2 completed'
-                    }
-                }
+                sh 'mvn -B -ntp checkstyle:checkstyle'
             }
-        }
-
-        stage('Stage 3') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 3'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 3 failed randomly')
-                        }
-                        echo 'Stage 3 completed'
-                    }
-                }
-            }
-        }
-
-        stage('Stage 4') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 4'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 4 failed randomly')
-                        }
-                        echo 'Stage 4 completed'
-                    }
-                }
-            }
-        }
-
-        stage('Stage 5') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 5'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 5 failed randomly')
-                        }
-                        echo 'Stage 5 completed'
-                    }
-                }
-            }
-        }
-
-        stage('Stage 6') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 6'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 6 failed randomly')
-                        }
-                        echo 'Stage 6 completed'
-                    }
-                }
-            }
-        }
-
-        stage('Stage 7') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 7'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 7 failed randomly')
-                        }
-                        echo 'Stage 7 completed'
-                    }
-                }
-            }
-        }
-
-        stage('Stage 8') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 8'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 8 failed randomly')
-                        }
-                        echo 'Stage 8 completed'
-                    }
-                }
-            }
-        }
-
-        stage('Stage 9') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 9'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 9 failed randomly')
-                        }
-                        echo 'Stage 9 completed'
-                    }
-                }
-            }
-        }
-
-        stage('Stage 10') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    script {
-                        echo 'Running Stage 10'
-                        if (new Random().nextInt(20) == 0) {
-                            error('Stage 10 failed randomly')
-                        }
-                        echo 'Stage 10 completed'
-                    }
+            post {
+                always {
+                    recordIssues(
+                        enabledForFailure: true,
+                        qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]],
+                        tools: [checkStyle(pattern: 'target/checkstyle-result.xml')]
+                    )
                 }
             }
         }
