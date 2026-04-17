@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mvn -B -ntp clean compile'
+                sh 'mvn -B -ntp -DskipTests clean package'
             }
         }
 
@@ -39,6 +39,7 @@ pipeline {
 
     post {
         always {
+            archiveArtifacts artifacts: 'target/*.jar,target/surefire-reports/*,target/checkstyle-result.xml', allowEmptyArchive: true
             echo 'Pipeline finished'
         }
     }
